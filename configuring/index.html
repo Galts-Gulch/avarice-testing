@@ -9,11 +9,11 @@
         
         <link rel="shortcut icon" href="../img/favicon.ico">
 
-        <title>Configuring - Avarice</title>
+	<title>Configuring - Avarice</title>
 
         <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
         <link href="../css/font-awesome-4.0.3.css" rel="stylesheet">
-        <link href="../css/prettify-1.0.css" rel="stylesheet">
+        <link rel="stylesheet" href="../css/highlight.css">
         <link href="../css/base.css" rel="stylesheet">
 
         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -101,7 +101,6 @@
 
             <!-- Search, Navigation and Repo links -->
             <ul class="nav navbar-nav navbar-right">
-                
                 <li >
                     <a rel="next" href="../releases/">
                         <i class="fa fa-arrow-left"></i> Previous
@@ -155,25 +154,21 @@
             <div class="col-md-9" role="main">
 
 <h1 id="configuring">Configuring</h1>
-<p>All configuration is accomplished by editing genconfig.py</p>
+<p>All configuration is accomplished by editing config.ini or running python3 webconfigure.py and visiting 127.0.0.1:5000 in a web browser.</p>
 <h2 id="api">API</h2>
 <ul>
-<li><strong>Exchange:</strong> OKCoin exchanges are only supported at this time</li>
-<li><strong>TradePair:</strong> Asset and currency to trade in. cny pairs use
-    okcoin.cn and usd pairs switch to okcoin.com</li>
-<li><strong>Asset:</strong> Should not be modified</li>
-<li><strong>Currency:</strong> Should not be modified</li>
-<li><strong>apikey:</strong> Only used if Trader is enabled (not used if only
-    simulating). Must be surrounded by apostrophes.</li>
-<li><strong>secretkey:</strong> Only used if Trader is enabled (not used if only
-    simulating). Must be surrounded by apostrophes.</li>
-<li><strong>AssetTradeMin:</strong> The minimum allowed asset trade size. This is
-    0.01 for BTC and 0.1 for LTC on OKCoin.</li>
+<li><strong>Exchange:</strong> OKCoin exchanges are only supported at this time. To switch between the CN and INTL exchange, change Trade Pair.</li>
+<li><strong>Trade Pair:</strong> Asset and currency to trade in. cny pairs use
+    okcoin.cn and usd pairs switch to okcoin.com.</li>
+<li><strong>API Key:</strong> Only used if Trader is enabled (not used if only
+    simulating).</li>
+<li><strong>Secret Key:</strong> Only used if Trader is enabled (not used if only
+    simulating).</li>
+<li><strong>Asset Trade Minimum:</strong> The minimum allowed asset trade size. This is generally 0.01 for BTC and 0.1 for LTC on OKCoin.</li>
 </ul>
 <h2 id="candles">Candles</h2>
 <ul>
-<li><strong>Verbose:</strong> Should each candle be printed with the number, last
-    price, time, and date?</li>
+<li><strong>Verbose:</strong> Should each candle print additional information such as candle number, price, time, and date?</li>
 <li><strong>Size:</strong> Candle Size in minutes. This is used for all indicator
     assessments, and trade frequency.</li>
 </ul>
@@ -183,47 +178,46 @@
     sells/buys at market bid/ask.</li>
 <li><strong>Everything below is also used by simulator:</strong></li>
 <li>
-<p><strong>TradeIndicators:</strong> IndicatorList has all available options, and
-    <a href="../indicators/">indicators</a> has info on configuring each.</p>
+<p><strong>Trade Indicators:</strong> <a href="../indicators/">indicators</a> has info on separately configuring each indicator.</p>
 <ul>
 <li>You may set multiple indicators to be traded by using a list
     format.</li>
 <li>A nested list means that those indicators should be combined (so
     signals from both should match before trading). These use
-    TradeVolume, SingleTrade, TradePersist, and TradeDelay from this
+    Trade Volume, Single Trade, Trade Persist, and Trade Delay from this
     top level Trader class.</li>
 <li>A top level list entry means that indicator will be traded
-    independently and use it's own Trader values (e.g. set in Class
-    EMA: Class Trader:)</li>
+    independently and use it's own Trader values (set in an indicator's "Trader" section further down in the config, or on the indicator page in web configure).</li>
 <li>Any volatility indicator must be used in a combined list to
     function since they don't generate signals on their own.</li>
+<li>Some indicators may be referenced with a concise or expanded name such as "EMA" and "Exponential Movement Average". The names are interchangeable.</li>
 <li>
 <p>Below are some examples of configurations with descriptions:</p>
 <ul>
 <li>
 <p>Only trade if EMA and MACD signals match, and also trade
-    FullStochRSID independent of any other TradeIndicators:</p>
-<pre class="prettyprint well"><code>TradeIndicators = [['EMA', 'MACD'], 'FullStochRSID']
+    FullStochRSID independent of any other Trade Indicators:</p>
+<pre><code>Trade Indicators = [['EMA', 'MACD'], 'FullStochRSID']
 </code></pre>
 </li>
 <li>
 <p>Only trade if EMA and MACD signals match:</p>
-<pre class="prettyprint well"><code>TradeIndicators = [['EMA', 'MACD']]
+<pre><code>Trade Indicators = [['EMA', 'MACD']]
 </code></pre>
 </li>
 <li>
 <p>Trade EMA and FullStochRSID independently of one another:</p>
-<pre class="prettyprint well"><code>TradeIndicators = ['EMA', 'FullStochRSID']
+<pre><code>Trade Indicators = ['EMA', 'FullStochRSID']
 </code></pre>
 </li>
 <li>
 <p>Only trade EMA:</p>
-<pre class="prettyprint well"><code>TradeIndicators = ['EMA']
+<pre><code>Trade Indicators = ['EMA']
 </code></pre>
 </li>
 <li>
 <p>Only trade MACD if BollBandwidth is beyond it's Threshold:</p>
-<pre class="prettyprint well"><code>TradeIndicators = [['BollBandwidth', 'MACD']]
+<pre><code>Trade Indicators = [['BollBandwidth', 'MACD']]
 </code></pre>
 </li>
 </ul>
@@ -231,36 +225,29 @@
 </ul>
 </li>
 <li>
-<p><strong>VerboseIndicators:</strong> Indicators which should be verbose each
-    candle. By default, we only print trades if all conditions are met.
-    Example:</p>
-<pre class="prettyprint well"><code>VerboseIndicators = ['MACD', 'EMA', 'FRAMA']
-</code></pre>
+<p><strong>Advanced Strategy:</strong> This is an advanced option with no other
+    available option in the stock Avarice package. This may be changed to the function name of a custom written strategy in strategies.py.</p>
 </li>
-<li>
-<p><strong>AdvancedStrategy:</strong> This is an advanced option with no other
-    available option stock. This may be changed to the function name of
-    a custom written strategy in strategies.py.</p>
-</li>
-<li><strong>TradeVolume:</strong> Percentage of available asset and currency
+<li><strong>Verbose:</strong> This may be set to True or False, or checked/unchecked. Should we print additional information about the indicator on each candle?</li>
+<li><strong>Candle Size Multiplier:</strong> Whole numbers only, used for aggregation. E.g. set to 3 if on 5 min candles and 15min indicator period is desired. A more advanced feature to offer per-indicator fine-tuning.</li>
+<li><strong>Trade Volume:</strong> Percentage of available asset and currency
     evaluated on each trade. 50 is 50%. Only used on combined
     indicators. It is recommended to set this to a low value if
-    SingleTrade is enabled.</li>
-<li><strong>SingleTrade:</strong> Should we only do a single consecutive sell or buy?
-    This still uses TradeVolume percent on each trade. This is useful
+    Single Trade is not enabled.</li>
+<li><strong>Single Trade:</strong> Should we only do a single sell or buy?
+    This still uses Trade Volume percent on each trade. This is useful
     for MA style strategies, whereas oscillator or diff style should be
     set to False (to often continue selling if above threshold, or
     buying below).</li>
-<li><strong>TradeDelay:</strong> How many candles with indicator info before allowing
-    trades? <em>Must be equal to 1.</em></li>
-<li><strong>ReIssueSlippage:</strong> What delta (as a percentage) of order price
+<li><strong>Trade Delay:</strong> How many candles with indicator info before allowing trades? <em>Must be equal to 1.</em></li>
+<li><strong>ReIssue Slippage:</strong> What delta (as a percentage) of order price
     should we continue trying to get an order through for?</li>
-<li><strong>ReIssueDelay:</strong> How many seconds should we wait for an order to
+<li><strong>ReIssue Delay:</strong> How many seconds should we wait for an order to
     succeed before attempting to re-order? <em>This also affects the order
     delay</em></li>
-<li><strong>VolatilityThresholdOver:</strong> Only available on volatility
+<li><strong>Volatility Threshold Over:</strong> Only available on volatility
     indicators. This is default enabled, and runs if the volatility
-    indicator is above threshold. This may be set to <em>False</em> to revserse
+    indicator is above threshold. This may be set to <em>False</em> to reverse
     the behavior.</li>
 </ul>
 <h2 id="simulator">Simulator</h2>
@@ -272,22 +259,22 @@
 </ul>
 <h2 id="notifier">Notifier</h2>
 <ul>
-<li><strong>TextFile:</strong> Record a log of all simulator and trader actions.<ul>
-<li><strong>RolloverTime:</strong> Time in hours to switch to a new log file.</li>
-<li><strong>BackupCount:</strong> How many log files to keep? 0 to keep all.</li>
+<li><strong>Text File:</strong> Record a log of all simulator and trader actions.<ul>
+<li><strong>Rollover Time:</strong> Time in hours to switch to a new log file.</li>
+<li><strong>Backup Count:</strong> How many log files to keep? 0 to keep all.</li>
 <li><strong>Path:</strong> Relative path to simulator and trader text file
     directory.</li>
-<li><strong>TradeName:</strong> Filename for trader text file.</li>
-<li><strong>SimName:</strong> Filename for simulator text file.</li>
+<li><strong>Trader File Name:</strong> Filename for trader text file.</li>
+<li><strong>Simulator File Name:</strong> Filename for simulator text file.</li>
 </ul>
 </li>
 <li><strong>Pushover:</strong> Push notifications to your
     <a href="https://pushover.net/">Pushover</a> account.<ul>
 <li><strong>Simulator:</strong> Enable for simulator actions.</li>
 <li><strong>Trader:</strong> Enable for trader actions.</li>
-<li><strong>AppToken:</strong> The Pushover <em>Application Token</em> to be used.
+<li><strong>App Token:</strong> The Pushover <em>Application Token</em> to be used.
     Register a new app <a href="https://pushover.net/apps/build">here</a></li>
-<li><strong>UserKey:</strong> Your Pushover <em>User Key</em> found on the Pushover
+<li><strong>User Key:</strong> Your Pushover <em>User Key</em> found on the Pushover
     dashboard.</li>
 </ul>
 </li>
@@ -299,7 +286,7 @@
 <li><strong>To:</strong> Email address to send to.</li>
 </ul>
 </li>
-<li><strong>TlsSMTP:</strong> TLS SMTP email support. Configured for GMail by
+<li><strong>TLS SMTP:</strong> TLS SMTP email support. Configured for GMail by
     default.<ul>
 <li><strong>Simulator:</strong> Enable for simulator actions.</li>
 <li><strong>Trader:</strong> Enable for trader actions.</li>
@@ -317,6 +304,8 @@
 </ul>
 <h2 id="database">Database</h2>
 <ul>
+<li><strong>Archive:</strong> Save all data in Archive.sqlite in database Path.</li>
+<li><strong>Store All:</strong> Never delete any data. Avarice normally only keeps the needed data.</li>
 <li><strong>Debug:</strong> Debug flag avoids dropping the db table. <em>This is only
     ever used for developing and should not otherwise be used.</em></li>
 <li><strong>Path:</strong> Relative path to database directory.</li>
@@ -336,32 +325,50 @@ Blue.</p>
 </li>
 <li>
 <p><strong>Indicators:</strong> A list of indicators to graph. Example:</p>
-<pre class="prettyprint well"><code>Indicators = ['MACD', 'EMA']
+<pre><code>Indicators = ['MACD', 'EMA']
 </code></pre>
 </li>
 <li>
-<p><strong>ShowTime:</strong> Show time or show candle numbers as x axis labels?</p>
+<p><strong>Show Time:</strong> Show time or show candle numbers as x axis labels?</p>
 </li>
-<li><strong>MaxLookback:</strong> How many candles should we show on the graph
+<li><strong>Max Lookback:</strong> How many candles should we show on the graph
     (x-axis)?</li>
 </ul>
 <h2 id="indicators">Indicators</h2>
 <ul>
-<li>Any <strong>Trader</strong> class nested inside an indicator class only effects
+<li>Any <strong>Trader</strong> nested config only effects
     the indicator if it's an independent indicator (not a combined
-    indicator). See the "TradeIndicator" section above in documentation
+    indicator). See the "Trade Indicator" section above in documentation
     for more info.</li>
-<li>All indicators are detailed in the <a href="../indicators/">Indicators</a> page
-    in documentation.</li>
-</ul>
-</div>
+<li><strong>Verbose:</strong> This may be set to True or False, or checked/unchecked. Should we print additional information about the indicator on each candle?</li>
+<li><strong>Candle Size Multiplier:</strong> Whole numbers only, used for aggregation. E.g. set to 3 if on 5 min candles and 15min indicator period is desired. A more advanced feature to offer per-indicator fine-tuning.</li>
+<li><strong>Trade Volume:</strong> Percentage of available asset and currency
+        evaluated on each trade. 50 is 50%. Only used on combined
+        indicators. It is recommended to set this to a low value if
+        Single Trade is not enabled.</li>
+<li><strong>Single Trade:</strong> Should we only do a single sell or buy?
+        This still uses Trade Volume percent on each trade. This is useful
+        for MA style strategies, whereas oscillator or diff style should be
+        set to False (to often continue selling if above threshold, or
+        buying below).</li>
+<li><strong>Trade Delay:</strong> How many candles with indicator info before allowing trades? <em>Must be equal to 1.</em></li>
+<li><strong>Volatility Threshold Over:</strong> Only available on volatility
+        indicators. This is default enabled, and runs if the volatility
+        indicator is above threshold. This may be set to <em>False</em> to reverse
+        the behavior.</li>
+<li>All indicators are detailed in the <a href="../indicators/">Indicators</a> page.</li>
+</ul></div>
         </div>
 
-        
+        <footer class="col-md-12">
+            <hr>
+            
+            <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
+        </footer>
 
-        <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+        <script src="../js/jquery-1.10.2.min.js"></script>
         <script src="../js/bootstrap-3.0.3.min.js"></script>
-        <script src="../js/prettify-1.0.min.js"></script>
+        <script src="../js/highlight.pack.js"></script>
         <script src="../js/base.js"></script>
     </body>
 </html>
